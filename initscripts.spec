@@ -6,7 +6,7 @@ Version: 9.03.58
 # ppp-watch is GPLv2+, everything else is GPLv2
 License: GPLv2 and GPLv2+
 Group: System Environment/Base
-Release: 1%{?dist}
+Release: 1%{?dist}.1
 URL: http://fedorahosted.org/releases/i/n/initscripts/
 Source: http://fedorahosted.org/releases/i/n/initscripts/initscripts-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -48,6 +48,8 @@ Requires(post): /sbin/chkconfig, coreutils
 Requires(preun): /sbin/chkconfig
 BuildRequires: glib2-devel popt-devel gettext pkgconfig
 
+Patch001: initscripts-9.03.58-start-vpninterfaces.patch
+
 %description
 The initscripts package contains the basic system scripts used to boot
 your Red Hat or Fedora system, change runlevels, and shut the system down
@@ -67,6 +69,7 @@ Currently, this consists of various memory checking code.
 
 %prep
 %setup -q
+%patch001 -p1
 
 %build
 make
@@ -248,6 +251,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/profile.d/debug*
 
 %changelog
+* Tue Apr 25 2017 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.58-1.el6_9.1
+- regression in commit a2ecd685d60 fixed [start $vpninterfaces]
+
 * Wed Jan 18 2017 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.58-1
 - regression in commit bab72274889 fixed [missing $() for DAD detection]
 
