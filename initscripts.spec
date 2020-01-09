@@ -2,11 +2,11 @@
 
 Summary: The inittab file and the /etc/init.d scripts
 Name: initscripts
-Version: 9.03.53
+Version: 9.03.58
 # ppp-watch is GPLv2+, everything else is GPLv2
 License: GPLv2 and GPLv2+
 Group: System Environment/Base
-Release: 1%{?dist}.2
+Release: 1%{?dist}
 URL: http://fedorahosted.org/releases/i/n/initscripts/
 Source: http://fedorahosted.org/releases/i/n/initscripts/initscripts-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -48,8 +48,6 @@ Requires(post): /sbin/chkconfig, coreutils
 Requires(preun): /sbin/chkconfig
 BuildRequires: glib2-devel popt-devel gettext pkgconfig
 
-Patch001: initscripts-9.03.58-flush-global-scope.patch
-
 %description
 The initscripts package contains the basic system scripts used to boot
 your Red Hat or Fedora system, change runlevels, and shut the system down
@@ -69,7 +67,6 @@ Currently, this consists of various memory checking code.
 
 %prep
 %setup -q
-%patch001 -p1
 
 %build
 make
@@ -251,11 +248,30 @@ rm -rf $RPM_BUILD_ROOT
 /etc/profile.d/debug*
 
 %changelog
-* Thu Feb 09 2017 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.53-1.el6_8.2
-- fix ifdown with 'lo' (loopback) alias (bug #1420053)
+* Wed Jan 18 2017 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.58-1
+- regression in commit bab72274889 fixed [missing $() for DAD detection]
 
-* Mon Jun 13 2016 Lukáš Nykrýn <lnykryn@redhat.com> - 9.03.53-1.1
-- spec: we need newer lvm
+* Tue Jan 10 2017 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.57-1
+- regression in commit ca3cea691b6 fixed [quotes for $DHCLIENTARGS removed]
+
+* Mon Nov 21 2016 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.56-1
+- regression in commit ca3cea691b6 fixed [${LEASEFILE} not specified]
+
+* Wed Nov 16 2016 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.55-1
+- ipcalc: detect invalid mask
+- ifup-aliases: send gratuitous ARPs when adding addresses
+- network: treat other tunnel interfaces (fixes ifdown stage)
+- kexec-disable.conf: release kexec memory properly
+- network-functions: do not send hostname via dhclient everytime
+- sysconfig/network: NO_DHCP_HOSTNAME option introduced
+- ipv6_add_addr_on_device: replace the existing address on NIC
+
+* Mon Nov  7 2016 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.03.54-1
+- specfile: require newer lvm
+- ifdown-eth: add timeout for when flushing global scope
+- functions: support boolean values in is_true() & is_false()
+- ifup-aliases: do not return with error when arping fails
+- netconsole: resolve domain name via 'getent' instead of 'hosts'
 
 * Tue Apr 12 2016 Lukáš Nykrýn <lnykryn@redhat.com> - 9.03.53-1
 - functions: parse -d first
