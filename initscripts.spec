@@ -4,7 +4,7 @@ Version: 9.49.41
 # ppp-watch is GPLv2+, everything else is GPLv2
 License: GPLv2 and GPLv2+
 Group: System Environment/Base
-Release: 1%{?dist}
+Release: 1%{?dist}.1
 URL: https://github.com/fedora-sysv/initscripts
 Source: https://github.com/fedora-sysv/initscripts/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -36,6 +36,8 @@ Requires(preun): /sbin/chkconfig
 BuildRequires: glib2-devel popt-devel gettext pkgconfig systemd
 Provides: /sbin/service
 
+Patch001:   initscripts-9.49.41-fix-setting-of-firewall-ZONE.patch
+
 %description
 The initscripts package contains basic system scripts used
 during a boot of the system. It also contains scripts which
@@ -54,6 +56,7 @@ Currently, this consists of various memory checking code.
 
 %prep
 %setup -q
+%patch001 -p1
 
 %build
 make
@@ -220,6 +223,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/profile.d/debug*
 
 %changelog
+* Mon Jun 11 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1.el7_5.1
+- network-scripts: setting of firewall ZONE fixed (bug #1588566)
+
 * Tue Jan 02 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1
 - ifdown-post: fix logical error in commit 5d61564
 - network-functions: use POSIX forwarding instead of bash-ism
