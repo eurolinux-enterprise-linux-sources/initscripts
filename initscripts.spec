@@ -4,7 +4,7 @@ Version: 9.49.41
 # ppp-watch is GPLv2+, everything else is GPLv2
 License: GPLv2 and GPLv2+
 Group: System Environment/Base
-Release: 1%{?dist}.1
+Release: 1%{?dist}.2
 URL: https://github.com/fedora-sysv/initscripts
 Source: https://github.com/fedora-sysv/initscripts/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -37,6 +37,7 @@ BuildRequires: glib2-devel popt-devel gettext pkgconfig systemd
 Provides: /sbin/service
 
 Patch001:   initscripts-9.49.41-fix-setting-of-firewall-ZONE.patch
+Patch002:   initscripts-9.49.41-fix-incorrect-condition-for-RESOLV_MODS.patch
 
 %description
 The initscripts package contains basic system scripts used
@@ -57,6 +58,7 @@ Currently, this consists of various memory checking code.
 %prep
 %setup -q
 %patch001 -p1
+%patch002 -p1
 
 %build
 make
@@ -223,6 +225,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/profile.d/debug*
 
 %changelog
+* Tue Aug 28 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1.el7_5.2
+- ifup-post: fix incorrect condition for RESOLV_MODS (bug #1622533)
+
 * Mon Jun 11 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1.el7_5.1
 - network-scripts: setting of firewall ZONE fixed (bug #1588566)
 
