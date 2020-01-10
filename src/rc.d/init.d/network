@@ -162,9 +162,23 @@ stop)
     [ "$EUID" != "0" ] && exit 4
     # Don't shut the network down if root or /usr is on NFS or a network
     # block device.
-    if systemctl show --property=RequiredBy -- -.mount usr.mount | grep -q 'remote-fs.target' ; then
+    root_fstype=$(gawk '{ if ($1 !~ /^[ \t]*#/ && $2 == "/"    && $3 != "rootfs") { print $3; }}' /proc/mounts)
+    usr_fstype=$(gawk  '{ if ($1 !~ /^[ \t]*#/ && $2 == "/usr" && $3 != "rootfs") { print $3; }}' /proc/mounts)
+
+    if [[ "${root_fstype}" == nfs* || "${usr_fstype}" == nfs* ]] || systemctl show --property=RequiredBy -- -.mount usr.mount | grep -q 'remote-fs.target' ; then
         net_log $"rootfs or /usr is on network filesystem, leaving network up"
         exit 1
+    fi
+
+    unset root_fstype usr_fstype
+
+    # Don't shut the network down when shutting down the system if configured
+    # as such in sysconfig
+    if is_false "$IFDOWN_ON_SHUTDOWN"; then
+      if systemctl is-system-running | grep -q 'stopping'; then
+        net_log $"system is shutting down, leaving interfaces up as requested"
+        exit 1
+      fi
     fi
 
     vlaninterfaces=""
@@ -236,14 +250,14 @@ status)
     echo $"Currently active devices:"
     echo $(/sbin/ip -o link show up | awk -F ": " '{ print $2 }')
     ;;
-restart|reload|force-reload)
+restart|force-reload)
     cd "$CWD"
     $0 stop
     $0 start
     rc=$?
     ;;
 *)
-    echo $"Usage: $0 {start|stop|status|restart|reload|force-reload}"
+    echo $"Usage: $0 {start|stop|status|restart|force-reload}"
     exit 2
 esac
 

@@ -1,10 +1,10 @@
 Summary: The inittab file and the /etc/init.d scripts
 Name: initscripts
-Version: 9.49.41
+Version: 9.49.46
 # ppp-watch is GPLv2+, everything else is GPLv2
 License: GPLv2 and GPLv2+
 Group: System Environment/Base
-Release: 1%{?dist}.2
+Release: 1%{?dist}
 URL: https://github.com/fedora-sysv/initscripts
 Source: https://github.com/fedora-sysv/initscripts/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -36,9 +36,6 @@ Requires(preun): /sbin/chkconfig
 BuildRequires: glib2-devel popt-devel gettext pkgconfig systemd
 Provides: /sbin/service
 
-Patch001:   initscripts-9.49.41-fix-setting-of-firewall-ZONE.patch
-Patch002:   initscripts-9.49.41-fix-incorrect-condition-for-RESOLV_MODS.patch
-
 %description
 The initscripts package contains basic system scripts used
 during a boot of the system. It also contains scripts which
@@ -57,8 +54,6 @@ Currently, this consists of various memory checking code.
 
 %prep
 %setup -q
-%patch001 -p1
-%patch002 -p1
 
 %build
 make
@@ -225,11 +220,29 @@ rm -rf $RPM_BUILD_ROOT
 /etc/profile.d/debug*
 
 %changelog
-* Tue Aug 28 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1.el7_5.2
-- ifup-post: fix incorrect condition for RESOLV_MODS (bug #1622533)
+* Fri Aug 24 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.46-1
+- ifup-post: fix incorrect condition for RESOLV_MODS (bug #1610411)
 
-* Mon Jun 11 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1.el7_5.1
-- network-scripts: setting of firewall ZONE fixed (bug #1588566)
+* Tue Jul 24 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.45-1
+- network: parsing of /proc/mounts returned (bug #1572659)
+- netconsole: LSB header added (bug #1508489)
+- ifdown-eth: no longer needed 'pidof -x dhclient' condition removed (bug #1559384)
+
+* Thu Jun 07 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.44-1
+- network-scripts: setting of firewall ZONE fixed (bug #1586284)
+
+* Tue May 29 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.43-1
+- network: add knob to optionally keep interfaces up during shutdown
+
+* Fri May 25 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.42-1
+- rhel-autorelabel: set UEFI boot order (BootNext) same as BootCurrent
+- network-functions: use tr to upper case strings rather than awk
+- sysconfig/readonly-root: Clarify the usage of readonly-root
+- network-functions: add error messages for bonding installation
+- sysctl.conf.s390: drop SHMALL and SHMMAX
+- network.service: 'reload' removed
+- rhel-readonly.service: target name for random seed fixed
+- init.d/functions: fix sourcing for ksh
 
 * Tue Jan 02 2018 David Kaspar [Dee'Kej] <dkaspar@redhat.com> - 9.49.41-1
 - ifdown-post: fix logical error in commit 5d61564
